@@ -35,6 +35,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.io.InputStream;
+import java.io.IOException;
+import java.util.Properties;
+import java.io.FileInputStream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -227,7 +231,15 @@ public class DatabaseUtils {
             //ds.setDriverClass("com.mysql.jdbc.Driver");
             ds.setServerName("jdbc:mysql://localhost/admin_test");
             ds.setUser("root");
-            ds.setPassword("**pasword**");
+            String password = "";
+            try (InputStream inputStream = new FileInputStream("application.properties")) {
+                Properties properties = new Properties();
+                properties.load(inputStream);
+                password = properties.getProperty("password");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ds.setPassword(password);
             dataSource = ds;
         } catch (Exception ex) {
             throw new ServletException("Cannot retrieve jdbc:mysql://localhost/admin_test", ex);
