@@ -11,6 +11,10 @@
 package org.cidrz.webapp.dynasite.utils;
 
 import java.sql.*;
+import java.io.InputStream;
+import java.io.IOException;
+import java.util.Properties;
+import java.io.FileInputStream;
 
 /**
  * Created by IntelliJ IDEA.
@@ -23,7 +27,15 @@ import java.sql.*;
 public class Migrate {
     public int getSchema() throws Exception, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/zeprs", "root", "**pasword**");
+        String password = "";
+        try (InputStream inputStream = new FileInputStream("application.properties")) {
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            password = properties.getProperty("password");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/zeprs", "root", password);
 
         String encSQL = "SELECT v.id AS evid, er.patient_id, f.id AS field_id, er.last_modified, er.created, er.last_modified_by, er.created_by\n" +
                 "    FROM encounter_record er, encounter_value v, page_item p,form_field f\n" +
